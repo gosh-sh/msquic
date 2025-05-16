@@ -229,8 +229,12 @@ impl CertificateHashStore {
         // prepare slice with nul terminator
         let c_str = CString::new(store_name).unwrap();
         let c_slice = c_str.as_bytes_with_nul();
-        let c_slice2 =
-            unsafe { std::slice::from_raw_parts(c_slice.as_ptr() as *const i8, c_slice.len()) };
+        let c_slice2 = unsafe {
+            std::slice::from_raw_parts(
+                c_slice.as_ptr() as *const std::os::raw::c_char,
+                c_slice.len(),
+            )
+        };
         // copy with nul terminator
         let mut name_buff: [std::os::raw::c_char; 128] = [0; 128];
         let chunk = &mut name_buff[..c_slice2.len()];
