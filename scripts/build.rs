@@ -69,6 +69,7 @@ fn cmake_build() {
             .define("CMAKE_OSX_DEPLOYMENT_TARGET", "14.5"),
         "aarch64-apple-darwin" => config
             .define("CMAKE_OSX_ARCHITECTURES", "arm64")
+            .define("CMAKE_OSX_SYSROOT", osx_sdk_path())
             .define("CMAKE_OSX_DEPLOYMENT_TARGET", "14.5"),
         _ => &mut config,
     };
@@ -91,6 +92,14 @@ fn cmake_build() {
         }
         println!("cargo:rustc-link-lib=static=msquic");
     }
+}
+
+fn osx_sdk_path() -> String {
+    let sdk = std::process::Command::new("xcrun")
+        .args(["--sdk", "macosx", "--show-sdk-path"])
+        .output()
+        .unwrap();
+    String::from_utf8(sdk.stdout).unwrap().trim().to_string()
 }
 
 #[cfg(feature = "find")]
